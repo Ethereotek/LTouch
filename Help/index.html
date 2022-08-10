@@ -6,21 +6,197 @@
 	<link rel="stylesheet" href="styles/styles.css">
 	<title>L-Touch</title>
 </head>
-<header><img src="/content/et_logo.png" alt="ETLOGO"></header>
+<header><img src="content/et_logo.png" 
+	width="70" 
+	height="60"
+	alt="ETLOGO"></header>
 <body>
 	<h1>L-Touch - <i>Source Controller</i></h1>
-	<hr><br><br>
+	<hr>
 
 	<p class="introduction">
-		The Source Controller provides control of an L-ISA sound object's parameters <i>Pan</i>, <i>Width</i>, etc...
+		The Source Controller provides control of an L-ISA sound object's parameters <i>Pan</i>, <i>Width</i>, Distance and Elevation via the OSC API. It is also set to receive OSC in order to maintain synchronization if the target object is moved from the Controller. The Python API provides additional functionality such as basic trajectories based on easing functions and a parameter presets dictionary.<br>
+		Many of the parameters are bound to properties in the Python extension, so care should be taken to not override this binding with CHOP exports or reference expressions. Instead, one can call the parameters with the typical syntax (e.g. <span class="python_code">op("Source1").par.Pan</span>) or by setting the Python attribute, e.g. <span class="python_code">setattr(op("Source1"), "Pan", &lt;float&gt;)</span>, although this latter method should be done carefully.<br>
 	</p>
 	<hr>
 	<br>
+	<!-- Parameters Section -->
+	<h3 class="Par_Section">Parameters - Soundscape Page</h3>
+	
+	<!-- Pan Range -->
+	<p class="Pars"><span class="Par_Label"><b>Pan Range: </b></span>These values set the minimum and maximum pan values in degrees; they should match the values found in L-ISA Controller under Settings&gt;Soundscape&gt;Parameters Ranges<br><ul>
+		<li><i class="Par_Name">Panrange1</i>: sets the minimum pan in degrees.</li>
+		<li><i class="Par_Name">Panrange2</i>: sets the maximum pan in degrees.</li></ul>
+	<!--Pan-->
+	<p class="Pars"><span class="Par_Label"><b>Pan:</b> </span> <span class="Par_Name">Pan </span>Controls an object's pan; normalized 0-1.</p>
+
+	<!--Width-->
+	<p class="Pars"><span class="Par_Label"><b>Width:</b> </span> <span class="Par_Name">Width </span>Controls an object's width; normalized 0-1.</p>
+
+	<!--Distance-->
+	<p class="Pars"><span class="Par_Label"><b>Distance:</b> </span><span class="Par_Name">Distance </span>Controls an object's distance; normalized 0-1</p>
+	<!--Want to have a lin/log switch for distance-->
+
+	<!--Elevation-->
+	<p class="Pars"><span class="Par_Label"><b>Elevation:</b> </span><span class="Par_Name">Elevation </span>Controls an object's elevation; normalized 0-1</p>
+
+	<!--Cartesian-->
+	<p class="Pars"><span class="Par_Label"><b>Cartesian:</b> </span><span class="Par_Name">Cartesian </span>When toggled off, Pan and Distance parameters are enabled, the component is in polar mode, and sends L-ISA formatted polar coordinates When toggled on, Pan and Distance parameters are disabled, input cartesian coordinates [tx, ty, tz] are converted to L-ISA formatted polar coordinates and send to the Controller.</p>
+
+	<!--Position-->
+	<p class="Pars"><span class="Par_Label"><b>Position: </b></span>These three float values are the tx, ty and tz components of an object's Cartesian-formatted position. The user should take care that the input is already scaled from -1 to 1 in the x-y horizontal plan and 0-1 on the z axis.<br>
+		<ul>
+			<li><span class="Par_Name">Tx</span> corresponds to [tx]</li>
+			<li><span class="Par_Name">Ty</span> corresponds to [ty]</li>
+			<li><span class="Par_Name">Tz</span> corresponds to [tz]</li>
+		</ul></p>
 
 	<h3 class="Par_Section">Parameters - Soundscape Page</h3>
-	<p class="Pars"><span class="Par_Label"><b>Pan Range: </b></span>These values set the minimum and maximum pan values in degrees; they should match the values found in L-ISA Controller under Settings&gt;Soundscape&gt;Parameters Ranges<br><ul>
-		<i class="Par_Name">Panrange1</i>: sets the minimum pan in degrees.<br>
-		<i class="Par_Name">Panrange2</i>: sets the maximum pan in degrees.<br> 
-	<p class="Pars"><span class="Par_Label">Pan: </span>
+
+	<!--Parameters CHOP-->
+	<p class="Pars">
+		<span class="Par_Label">Parameters CHOP: </span>
+		<span class="Par_Name">Parameterschop</span> (Optional) The path to a CHOP with positional data. The component assumes the format (polar or cartesian) based on the status of the Cartesian toggle. Names of channels don't matter, but they must be in the order (Pan, Width, Distance, Elevation) or (Tx, Ty, Tz, Width). Note that it will always assume this order, so while it is not necessary to include all channels, it would not be possible, for example, to pass Tx, Tz and Width, as it would read Tz and Width as Ty and Tz, respectively.
+	</p>
+
+	<!--ID-->
+	<p class="Pars">
+		<span class="Par_Label">ID: </span>
+		<span class="Par_Name">Id</span> The index of the L-ISA source object to be controlled.
+	</p><br>
+
+	<!--Name-->
+	<p class="Pars">
+		<span class="Par_Label">Name: </span>
+		<span class="Par_Name">Name</span> The name of the object in the L-ISA Controller.
+	</p><br>
+
+	<!--Locked-->
+	<p class="Pars">
+		<span class="Par_Label">Locked: </span>
+		<span class="Par_Name">Locked</span> This disables the Id parameter, locking it to its current object selection. Note that this parameter can still be changed by calling it via Python, e.g. <span class="python_code">op("Source1").par.Id = 2</span>. Setting its value to the Python expression <span class="python_code">me.digits</span> and ending the names of copies with increasing values is an efficient and easy way to link a series of components to a series of objects in L-ISA Controller.
+	</p><br>
+
+	<!--Realtime-->
+	<p class="Pars">
+		<span class="Par_Label">Realtime: </span>
+		<span class="Par_Name">Realtime</span> When toggled on, the component updates the object in L-ISA controller whenever a parameter is changed. When toggled off, changes in parameters along do not trigger OSC output.
+	</p><br>
+
+	<!--Send-->
+	<p class="Pars">
+		<span class="Par_Label">Send: </span>
+		<span class="Par_Name">Send</span> When Realtime is toggled off, pulsing this parameter will send source object parameters to L-ISA Controller.
+	</p><br>
+
+	<!--Pan (flag)-->
+	<p class="Pars">
+		<span class="Par_Label">Pan: </span>
+		<span class="Par_Name">Panflag</span> Select the control flag of the pan parameter. The selections (for pan and the other object soundscape parameters) are as follows:<ul>
+			<li>Off</li>
+			<li>Snapshot</li>
+			<li>Plugin</li>
+			<li>OSC (<i>this setting is required for the parameter to be controlled by the LTouch Source Controller</i>)</li>
+			<li>Tracker (<i>for pan, distance and elevation only</i>)</li>
+		</ul>
+	</p><br>
+
+	<!--Width (flag)-->
+	<p class="Pars">
+		<span class="Par_Label">Width: </span>
+		<span class="Par_Name">Widthflag</span> Select the control flag for the width parameter.
+	</p><br>
+
+	<!--Distance (flag)-->
+	<p class="Pars">
+		<span class="Par_Label">Distance: </span>
+		<span class="Par_Name">Distanceflag</span> Select the control flag for the distance parameter.
+	</p><br>
+
+	<!--Elevation (flag)-->
+	<p class="Pars">
+		<span class="Par_Label">Elevation: </span>
+		<span class="Par_Name">Elevationflag</span> Select the control flag for the elevation parameter.
+	</p><br>
+
+	<!--Aux Send (flag)-->
+	<p class="Pars">
+		<span class="Par_Label">Aux Send: </span>
+		<span class="Par_Name">Sendlag</span> Select the control flag for the aux send parameter.
+	</p><br>
+
+	<h3 class="Par_Section">Parameters - Network Page</h3>
+
+	<!--IP-->
+	<p class="Pars">
+		<span class="Par_Label">IP: </span>
+		<span class="Par_Name">IP</span> The IP address of the machine hosting L-ISA Controller.	
+	</p>
+
+	<!--Send Port-->
+	<p class="Pars">
+		<span class="Par_Label">Send Port: </span>
+		<span class="Par_Name">Sendport</span> (<i>read only</i>) The port that L-ISA Controller receives on. Noe that while this never needs to be changed, if you want to reference it, it is stored as a string.	
+	</p>
+
+	<!--Receive Port-->
+	<p class="Pars">
+		<span class="Par_Label">Receive Port: </span>
+		<span class="Par_Name">Recv</span> The port on which the component is receiving feedback from L-ISA; defaults to 9990. The Controller always receives on port 8880, so it is not necessary to set this port.
+	</p><hr>
+
+	<!--
+		&lt;float&gt;
+		&lt;int&gt;
+	-->
+	<div class="Pyth_Ext">
+	<h4>Python Extension Reference</h4>
+	<h2>Source Class</h2>
+	<hr>
+	<p>This is the primary Python Extension, which is implemented widely within the component itself.</p>
+	
+	<p><b>Members</b></p>
+	
+	<p class="attr"><span class="attr_label">Pan</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set pan attribute</p>
+
+	<p class="attr"><span class="attr_label">Width</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set width attribute</p>
+
+	<p class="attr"><span class="attr_label">Distance</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set distance attribute</p>
+
+	<p class="attr"><span class="attr_label">Elevation</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set elevation attribute</p>
+
+	<p class="attr"><span class="attr_label">Tx</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set Tx attribute</p>
+
+	<p class="attr"><span class="attr_label">Ty</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set Ty attribute</p>
+
+	<p class="attr"><span class="attr_label">Tz</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set Tz attribute</p>	
+
+	<p class="attr"><span class="attr_label">Panrange</span> &rarr; &lt;float&gt; : <b>(Read Only)</b></p>
+	<p class="attr_descript">Get Panrange attribute</p>
+
+	<p class="attr"><span class="attr_label">Panmin</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set Panmin attribute</p>
+	
+	<p class="attr"><span class="attr_label">Panmax</span> &rarr; &lt;float&gt; :</p>
+	<p class="attr_descript">Get or set Panmax attribute</p>
+
+	<p><b>Methods</b></p>
+	<p class="attr"><span class="attr_label">SavePreset( preset_name )</span> &rarr; &lt;None&gt; :</p>
+	<p class="attr_descript">-</p>
+
+	<p class="attr"><span class="attr_label">RecallPreset( preset_name )</span> &rarr; &lt;None&gt; :</p>
+	<p class="attr_descript">-</p>
+
+	</div>
+
+
+
 </body>
 </html>

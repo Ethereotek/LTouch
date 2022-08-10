@@ -1,9 +1,14 @@
-p{
-	margin:  1px 100px;
-	padding:  10px;
+/* paragraphs */
+p.attr_descript{
+	margin-left: 5%;
 }
 
+/*div.Pyth_Ext{
+	margin-left: 20px;
+}*/
+
 header{
+	background-color: black;
 }
 
 h3.Par_Section{
@@ -12,4 +17,12 @@ h3.Par_Section{
 
 span.Par_Label{
 	color: grey;
+}
+
+span.Par_Name{
+	background-color: grey;
+}
+
+span.attr_label{
+	color:  grey;
 }

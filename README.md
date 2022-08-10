@@ -1,4 +1,3 @@
-# LTouch
 L-Touch is a TouchDesigner module for controlling L-ISA objects as well as many other parameters in L-ISA Controller via OSC.
 More information on specific parameters, and the python extensions, can be found in the pdf documentation.
 

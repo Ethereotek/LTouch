@@ -189,12 +189,19 @@
 
 	<p><b>Methods</b></p>
 	<p class="attr"><span class="attr_label">SavePreset( preset_name )</span> &rarr; &lt;None&gt; :</p>
-	<p class="attr_descript">-</p>
+	<p class="attr_descript">Saves the current pan, width, distance and elevation parameters in a dictionary entry. If preset_name is not unique, a warning box will pop up to confirm preset overwrite.</p>
 
 	<p class="attr"><span class="attr_label">RecallPreset( preset_name )</span> &rarr; &lt;None&gt; :</p>
-	<p class="attr_descript">-</p>
+	<p class="attr_descript">Recalls pan, width, distance and elevation parameters stored under preset_name.</p>
 
+	<h2>EasyPath Class</h2>
+	<hr>
+	<p>This class manages the easing functions that can be played back as trajectories. Note that this class is not promoted. An example of how to call a method from this class:</p>
+	<p class="python_code">op("Source1").ext.EasyPath.PlayPath("QuarticEaseIn", 0.1, 0.3, 10)</p>
+	
 	</div>
+
+
 
 
 

@@ -309,29 +309,51 @@ class Source:
 	def SavePreset(self, name):
 
 		self.name = name
-
-		if not self.Presets.get(self.name):
-
+		# if "name" does not already exist in Presets dictionary (self.Presets) then:
+		# add new preset to dictionary
+		# increase the "preset count", i.e. number of presets in dict
+		def write_to_dict(preset_name):
 			self.Presets[self.name] = [
 				self._pan.val,
 				self._width.val,
 				self._distance.val,
 				self._elevation.val]
 
-			self.Presets["preset count"] += 1
+			self.Presets["preset count"] += 1 
+		
+		if not self.Presets.get(self.name):
+			write_to_dict(self.name)
+			# 08/10/2022 put this in write_to_dict() func
+			# self.Presets[self.name] = [
+			# 	self._pan.val,
+			# 	self._width.val,
+			# 	self._distance.val,
+			# 	self._elevation.val]
+
+			# self.Presets["preset count"] += 1
 
 		else:
-			print("Nope, will make message later")
+			
+			message_text = "Preset \"{}\" already exists. Do you wish to overwrite this preset?".format(self.name)
+			message_box = ui.messageBox("Warning", message_text, buttons=["Yes", "No"])
+
+			if message_box == 0:
+				write_to_dict(self.name)
+			elif message_box == 1:
+				pass
+			
 
 	def RecallPreset(self, name):
-
 		self.name = name 
 
-		pars = self.Presets.get(self.name)
-		self._pan.val = pars[0]
-		self._width.val = pars[1]
-		self._distance.val = pars[2]
-		self._elevation.val = pars[3]
+		try:
+			pars = self.Presets.get(self.name)
+			self._pan.val = pars[0]
+			self._width.val = pars[1]
+			self._distance.val = pars[2]
+			self._elevation.val = pars[3]
+		except TypeError:
+			ui.messageBox("Error", "Preset \"{}\" does not exist".format(self.name), buttons=["Okay"])
 
 	
 ### CUSTOM TOGGLE PARAMETER FUNCTIONS	
